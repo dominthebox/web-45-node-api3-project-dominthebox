@@ -22,10 +22,12 @@ router.get('/:id', validateUserId, (req, res) => {
   res.json(req.user)
 });
 
-router.post('/', validateUser, (req, res) => {
-  // RETURN THE NEWLY CREATED USER OBJECT
-  // this needs a middleware to check that the request body is valid
-  console.log(req.name)
+router.post('/', validateUser, (req, res, next) => {
+  User.insert({ name: req.name })
+    .then(newUser => {
+      res.status(201).json(newUser)
+    })
+    .catch(next)
 });
 
 router.put('/:id', validateUser, validateUserId, (req, res) => {
@@ -57,7 +59,7 @@ router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
 
 router.use((err, req, res, next) => { // eslint-disable-line
   res.status(err.status || 500).json({
-    customMessage: 'Something horribly tragic happened inside posts router!',
+    customMessage: 'Something horribly tragic happened inside users router!',
     message: err.message,
     stack: err.stack
   })
